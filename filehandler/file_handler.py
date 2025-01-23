@@ -1,0 +1,13 @@
+class FileHandler:
+
+    def get_file_format(self) -> str:
+        ...
+
+    def load_file(self) -> None:
+        ...
+
+    def write_file(self) -> None:
+        ...
+
+    def append_file(self) -> None:
+        ...
