@@ -1,5 +1,5 @@
 import datetime
-from task_status import TaskStatus
+from entities.task_status import TaskStatus
 
 
 class Task:
