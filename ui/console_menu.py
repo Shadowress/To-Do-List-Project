@@ -1,5 +1,7 @@
-from .ui import UI
 import sys
+
+from common.exceptions import UnsupportedFileFormat
+from .ui import UI
 
 
 class ConsoleMenu(UI):
@@ -7,6 +9,6 @@ class ConsoleMenu(UI):
     def main_menu(self) -> None:
         print()
 
-    def file_path_error(file_format: str) -> None:
-        print(f"Failed to connect to system: {file_format} files are not accepted by this program")
+    def file_format_error(self, exception: UnsupportedFileFormat) -> None:
+        print(exception)
         sys.exit()

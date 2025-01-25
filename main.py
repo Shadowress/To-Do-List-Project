@@ -1,17 +1,16 @@
-import filehandler
-from services import TaskManager
-from ui import console_menu
+from controller import Controller
+from ui import ConsoleMenu
+from ui import UI
 
 
 def main() -> None:
     # File path and file format can be changed
     file_path = "task.csv"
 
-    file_handler = filehandler.init(file_path)
-    tasks = TaskManager(file_handler)
+    # Preferred ui can be changed
+    ui: UI = ConsoleMenu()
 
-    # Preferred UI can be changed
-    console_menu.main_menu()
+    Controller(file_path, ui).start()
 
 
 if __name__ == "__main__":

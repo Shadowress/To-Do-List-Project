@@ -1,4 +1,4 @@
-from filehandler import FileHandler
+from .file_handler import FileHandler
 
 
 class CSVFileHandler(FileHandler):
