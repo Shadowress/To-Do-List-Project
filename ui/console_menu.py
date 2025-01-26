@@ -1,14 +1,17 @@
 import sys
+from typing import TYPE_CHECKING
 
-from common.exceptions import UnsupportedFileFormat
 from .ui import UI
+
+if TYPE_CHECKING:
+    from controller import Controller
 
 
 class ConsoleMenu(UI):
 
-    def main_menu(self) -> None:
+    def run_main_menu(self, controller: 'Controller') -> None:
         print()
 
-    def file_format_error(self, exception: UnsupportedFileFormat) -> None:
+    def display_error_and_exit(self, exception: Exception) -> None:
         print(exception)
-        sys.exit()
+        sys.exit(1)

@@ -1,9 +1,8 @@
-from enum import Enum, auto
+from enum import Enum
 
 
 class TaskStatus(Enum):
-    PENDING: int = auto()
-    IN_PROGRESS: int = auto()
-    COMPLETED: int = auto()
-    OVERDUE: int = auto()
-    CANCELLED: int = auto()
+    PENDING: int = "Pending"
+    IN_PROGRESS: int = "In Progress"
+    COMPLETED: int = "Completed"
+    OVERDUE: int = "Overdue"

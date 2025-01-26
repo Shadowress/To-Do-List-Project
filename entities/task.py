@@ -1,12 +1,15 @@
-import datetime
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
-from entities.task_status import TaskStatus
+if TYPE_CHECKING:
+    import datetime
+    from entities.task_status import TaskStatus
 
 
 @dataclass
 class Task:
+    task_id: int
     title: str
     description: str
-    due_date: datetime
-    status: TaskStatus
+    due_date: 'datetime'
+    status: 'TaskStatus'

@@ -1,14 +1,16 @@
 from abc import ABC, abstractmethod
+from typing import TYPE_CHECKING
 
-from common.exceptions import UnsupportedFileFormat
+if TYPE_CHECKING:
+    from controller import Controller
 
 
 class UI(ABC):
 
     @abstractmethod
-    def main_menu(self) -> None:
+    def run_main_menu(self, controller: 'Controller') -> None:
         ...
 
     @abstractmethod
-    def file_format_error(self, exception: UnsupportedFileFormat) -> None:
+    def display_error_and_exit(self, exception: Exception) -> None:
         ...
