@@ -1,5 +1,8 @@
 from typing import TYPE_CHECKING
 
+from datetime import datetime
+from entities.task_status import TaskStatus
+
 if TYPE_CHECKING:
     from entities import Task
     from filehandler import FileHandler
@@ -17,12 +20,19 @@ class TaskManager:
         self._task_storage.update({task.task_id: task})
 
     @property
-    def task_storage(self) -> ...:  # todo change return type
-        # todo add formatting
-        return self._task_storage
+    def task_storage(self) -> tuple['Task', ...]:
+        return tuple(list(self._task_storage.values()))
 
-    def add_new_task(self) -> None:
-        ...
+    def add_new_task(self, data: list[str]) -> None:
+        task_id = int(data[0])
+        title = data[1]
+        description = data[2]
+        due_date = datetime.strptime(data[3], "%Y-%m-%d")
+        status = TaskStatus(data[4])
+
+        task: 'Task' = Task(task_id, title, description, due_date, status)
+        self.add_task_to_storage(task)
+        self.file_handler.append_file(self, task)
 
     def delete_task(self) -> None:
         ...

@@ -7,11 +7,11 @@ if TYPE_CHECKING:
     from entities import Task
 
 
-def create_file(file_path: str) -> None:
+def _create_file(file_path: str) -> None:
     open(file_path, "x").close()
 
 
-def check_file_permission(file_path: str) -> bool:
+def _check_file_permission(file_path: str) -> bool:
     try:
         with open(file_path, "r+"):
             pass
@@ -20,7 +20,7 @@ def check_file_permission(file_path: str) -> bool:
         return False
 
 
-def is_file_empty(file_path: str) -> bool:
+def _is_file_empty(file_path: str) -> bool:
     return os.path.getsize(file_path) == 0
 
 
@@ -33,13 +33,13 @@ class FileHandler(ABC):
         file_path: str = self.file_path
 
         if not os.path.exists(file_path):
-            create_file(file_path)
+            _create_file(file_path)
             return
 
-        if not check_file_permission(file_path):
+        if not _check_file_permission(file_path):
             raise PermissionError(f"Permission denied: Unable to access or modify the file '{file_path}'")
 
-        if is_file_empty(file_path):
+        if _is_file_empty(file_path):
             return
 
         self.load_file(data_storage)
@@ -53,5 +53,5 @@ class FileHandler(ABC):
         ...
 
     @abstractmethod
-    def append_file(self, data_storage: 'TaskManager', new_data: 'Task') -> None:
+    def append_file(self, data_storage: 'TaskManager', task: 'Task') -> None:
         ...

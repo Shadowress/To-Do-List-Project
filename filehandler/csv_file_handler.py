@@ -1,5 +1,4 @@
 import csv
-from dataclasses import fields
 from datetime import datetime
 from typing import TYPE_CHECKING
 
@@ -36,33 +35,46 @@ class CSVFileHandler(FileHandler):
         except csv.Error as e:
             raise CSVParsingError(f"CSV Parsing Error: {str(e)}")
 
-    # todo test
     def write_file(self, data_storage: 'TaskManager') -> None:
         try:
             with open(self.file_path, "w", newline="") as file:
                 writer = csv.writer(file)
-
-                # noinspection PyTypeChecker
-                writer.writerow([field.name for field in fields(Task)])
+                writer.writerow(["task_id", "title", "description", "due_date", "status"])
 
                 comma_token: str = self.comma_token
-                # todo Note: task_data is a Task object
-                for task_data in data_storage.task_storage:
-                    row = ",".join([data.replace(",", comma_token) for data in task_data])
-                    writer.writerow(row)
+                for task in data_storage.task_storage:
+                    try:
+                        data: list = [
+                            task.task_id,
+                            task.title.replace(",", comma_token),
+                            task.description.replace(",", comma_token),
+                            task.due_date.strftime("%Y-%m-%d"),
+                            task.status.value
+                        ]
 
+                        writer.writerow(data)
+                    except ValueError as e:
+                        raise ValueError(f"Error writing data for task ID {task.task_id}: {str(e)}")
         except csv.Error as e:
             raise CSVParsingError(f"CSV Parsing Error: {str(e)}")
 
-    # todo test
-    def append_file(self, data_storage: 'TaskManager', new_data: 'Task') -> None:
+    def append_file(self, data_storage: 'TaskManager', task: 'Task') -> None:
         try:
             with open(self.file_path, "a", newline="") as file:
                 writer = csv.writer(file)
 
                 comma_token: str = self.comma_token
-                row = ",".join([data.replace(",", comma_token) for data in new_data])
-                writer.writerow(row)
+                try:
+                    data: list = [
+                        task.task_id,
+                        task.title.replace(",", comma_token),
+                        task.description.replace(",", comma_token),
+                        task.due_date.strftime("%Y-%m-%d"),
+                        task.status.value
+                    ]
 
+                    writer.writerow(data)
+                except ValueError as e:
+                    raise ValueError(f"Error writing data for task ID {task.task_id}: {str(e)}")
         except csv.Error as e:
             raise CSVParsingError(f"CSV Parsing Error: {str(e)}")
