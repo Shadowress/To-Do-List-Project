@@ -6,9 +6,12 @@ if TYPE_CHECKING:
 
 
 class UI(ABC):
-
     @abstractmethod
     def run_main_menu(self, controller: 'Controller') -> None:
+        ...
+
+    @abstractmethod
+    def display_error(self, exception: Exception) -> None:
         ...
 
     @abstractmethod

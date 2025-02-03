@@ -20,6 +20,7 @@ def init(file_path: str) -> 'FileHandler':
             return JSONFileHandler(file_path)
         case _:
             raise UnsupportedFileFormatError(f"Unsupported file format: {file_format}")
+            return CSVFileHandler(file_path)
 
 
 def _get_file_format(file_path: str) -> str:
