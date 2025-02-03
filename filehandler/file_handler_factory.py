@@ -1,6 +1,7 @@
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+from common.exceptions import UnsupportedFileFormatError
 from .csv_file_handler import CSVFileHandler
 from .json_file_handler import JSONFileHandler
 
@@ -13,13 +14,12 @@ def init(file_path: str) -> 'FileHandler':
 
     # Add new file_format below if new file handler is added
     match file_format:
-        case "csv":
+        case "csv" | "txt":
             return CSVFileHandler(file_path)
         case "json":
             return JSONFileHandler(file_path)
         case _:
-            # todo change the Exception
-            raise Exception(f"Unsupported file format: {file_format}")
+            raise UnsupportedFileFormatError(f"Unsupported file format: {file_format}")
 
 
 def _get_file_format(file_path: str) -> str:

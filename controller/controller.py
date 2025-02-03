@@ -2,6 +2,7 @@ import threading
 from typing import TYPE_CHECKING
 
 import filehandler
+from common.exceptions import UnsupportedFileFormatError, FileDataError
 from services import TaskManager
 
 if TYPE_CHECKING:
@@ -19,6 +20,5 @@ class Controller:
             task_manager = TaskManager(file_handler)
             threading.Thread(task_manager.setup())
             self.ui.run_main_menu(self)
-        # todo change accepting Exception as general
-        except Exception as e:
+        except (UnsupportedFileFormatError, FileDataError, PermissionError) as e:
             self.ui.display_error_and_exit(e)

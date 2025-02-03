@@ -1,5 +1,5 @@
 from controller import Controller
-from ui import ConsoleMenu
+from ui.console_menu import ConsoleMenu
 from ui import UI
 
 

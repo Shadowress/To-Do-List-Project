@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    import datetime
+    from datetime import date
     from entities.task_status import TaskStatus
 
 
@@ -11,5 +11,5 @@ class Task:
     task_id: int
     title: str
     description: str
-    due_date: 'datetime'
+    due_date: 'date'
     status: 'TaskStatus'

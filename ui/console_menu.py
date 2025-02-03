@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 class ConsoleMenu(UI):
 
     def run_main_menu(self, controller: 'Controller') -> None:
-        print()
+        ...
 
     def display_error_and_exit(self, exception: Exception) -> None:
         print(exception)
