@@ -26,7 +26,7 @@ class CSVFileHandler(FileHandler):
                         task_id = int(line[0])
                         title = line[1].replace(comma_token, ",")
                         description = line[2].replace(comma_token, ",")
-                        due_date = datetime.strptime(line[3], "%Y-%m-%d")
+                        due_date = datetime.strptime(line[3], data_storage.date_format)
                         status = TaskStatus(line[4])
 
                         data_storage.add_task_to_storage(Task(task_id, title, description, due_date, status))
@@ -48,7 +48,7 @@ class CSVFileHandler(FileHandler):
                             task.task_id,
                             task.title.replace(",", comma_token),
                             task.description.replace(",", comma_token),
-                            task.due_date.strftime("%Y-%m-%d"),
+                            task.due_date.strftime(data_storage.date_format),
                             task.status.value
                         ]
 
@@ -69,7 +69,7 @@ class CSVFileHandler(FileHandler):
                         task.task_id,
                         task.title.replace(",", comma_token),
                         task.description.replace(",", comma_token),
-                        task.due_date.strftime("%Y-%m-%d"),
+                        task.due_date.strftime(data_storage.date_format),
                         task.status.value
                     ]
 

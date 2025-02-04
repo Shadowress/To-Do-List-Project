@@ -29,7 +29,7 @@ class FileHandler(ABC):
     def __init__(self, file_path: str):
         self.file_path = file_path
 
-    def setup_file(self, data_storage: 'TaskManager') -> None:
+    def setup(self, data_storage: 'TaskManager') -> None:
         file_path: str = self.file_path
 
         if not os.path.exists(file_path):
