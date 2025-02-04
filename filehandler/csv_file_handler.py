@@ -2,7 +2,7 @@ import csv
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-from common.exceptions import FileDataError, CSVParsingError
+from common.exceptions import FileDataError, CSVParsingError, FileWriteError
 from entities import Task
 from entities.task_status import TaskStatus
 from .file_handler import FileHandler
@@ -54,7 +54,7 @@ class CSVFileHandler(FileHandler):
 
                         writer.writerow(data)
                     except ValueError as e:
-                        raise ValueError(f"Error writing data for task ID {task.task_id}: {str(e)}")
+                        raise FileWriteError(f"Error writing data for task ID {task.task_id}: {str(e)}")
         except csv.Error as e:
             raise CSVParsingError(f"CSV Parsing Error: {str(e)}")
 
@@ -75,6 +75,6 @@ class CSVFileHandler(FileHandler):
 
                     writer.writerow(data)
                 except ValueError as e:
-                    raise ValueError(f"Error writing data for task ID {task.task_id}: {str(e)}")
+                    raise FileWriteError(f"Error writing data for task ID {task.task_id}: {str(e)}")
         except csv.Error as e:
             raise CSVParsingError(f"CSV Parsing Error: {str(e)}")

@@ -3,9 +3,6 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from common.exceptions import UnsupportedFileFormatError, InvalidUIError, InvalidDisplayDateFormatError
-from filehandler.csv_file_handler import CSVFileHandler
-from filehandler.json_file_handler import JSONFileHandler
-from ui.console_menu import ConsoleMenu
 
 if TYPE_CHECKING:
     from filehandler import FileHandler
@@ -13,6 +10,7 @@ if TYPE_CHECKING:
 
 
 def create_ui(ui: str) -> 'UI':
+    from ui.console_menu import ConsoleMenu
     try:
         # Add new ui below if new ui is added
         match ui:
@@ -40,8 +38,10 @@ def create_file_handler(file_path: str, ui: 'UI') -> 'FileHandler':
         # Add new file_format below if new file handler is added
         match file_format:
             case "csv" | "txt":
+                from filehandler.csv_file_handler import CSVFileHandler
                 return CSVFileHandler(file_path)
             case "json":
+                from filehandler.json_file_handler import JSONFileHandler
                 return JSONFileHandler(file_path)
             case _:
                 raise UnsupportedFileFormatError(f"Unsupported file format: {file_format}")
@@ -49,7 +49,7 @@ def create_file_handler(file_path: str, ui: 'UI') -> 'FileHandler':
     except UnsupportedFileFormatError as e:
         # The default file path and file handler can be changed below
         default_file_path: str = "task.csv"
-        default_file_handler: 'FileHandler' = CSVFileHandler(default_file_path)
+        default_file_handler: 'FileHandler' = create_file_handler(default_file_path, ui)
 
         ui.display_error(e)
         ui.display_message(f"Proceeded using default file path: {default_file_path}")

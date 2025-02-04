@@ -25,9 +25,8 @@ def _is_file_empty(file_path: str) -> bool:
 
 
 class FileHandler(ABC):
-
     def __init__(self, file_path: str):
-        self.file_path = file_path
+        self.file_path: str = file_path
 
     def setup(self, data_storage: 'TaskManager') -> None:
         file_path: str = self.file_path

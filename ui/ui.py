@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 
 class UI(ABC):
     def __init__(self) -> None:
-        self.display_date_format = set_display_date_format(config.DISPLAY_DATE_FORMAT)
+        self.display_date_format: str = set_display_date_format(config.DISPLAY_DATE_FORMAT, self)
 
     @abstractmethod
     def run_main_menu(self, controller: 'Controller') -> None:
