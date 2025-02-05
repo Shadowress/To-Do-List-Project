@@ -26,12 +26,14 @@ class CSVFileHandler(FileHandler):
                         task_id = int(line[0])
                         title = line[1].replace(comma_token, ",")
                         description = line[2].replace(comma_token, ",")
-                        due_date = datetime.strptime(line[3], data_storage.date_format)
+                        due_date = datetime.strptime(line[3], data_storage.DATE_FORMAT)
                         status = TaskStatus(line[4])
 
                         data_storage.add_task_to_storage(Task(task_id, title, description, due_date, status))
+
                     except (ValueError, IndexError) as e:
                         raise FileDataError(f"Error on line {line_number}: {line} - {str(e)}")
+
         except csv.Error as e:
             raise CSVParsingError(f"CSV Parsing Error: {str(e)}")
 
@@ -48,13 +50,15 @@ class CSVFileHandler(FileHandler):
                             task.task_id,
                             task.title.replace(",", comma_token),
                             task.description.replace(",", comma_token),
-                            task.due_date.strftime(data_storage.date_format),
-                            task.status.value
+                            task.due_date.strftime(data_storage.DATE_FORMAT),
+                            task.status
                         ]
 
                         writer.writerow(data)
+
                     except ValueError as e:
                         raise FileWriteError(f"Error writing data for task ID {task.task_id}: {str(e)}")
+
         except csv.Error as e:
             raise CSVParsingError(f"CSV Parsing Error: {str(e)}")
 
@@ -69,12 +73,14 @@ class CSVFileHandler(FileHandler):
                         task.task_id,
                         task.title.replace(",", comma_token),
                         task.description.replace(",", comma_token),
-                        task.due_date.strftime(data_storage.date_format),
-                        task.status.value
+                        task.due_date.strftime(data_storage.DATE_FORMAT),
+                        task.status
                     ]
 
                     writer.writerow(data)
+
                 except ValueError as e:
                     raise FileWriteError(f"Error writing data for task ID {task.task_id}: {str(e)}")
+
         except csv.Error as e:
             raise CSVParsingError(f"CSV Parsing Error: {str(e)}")

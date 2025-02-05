@@ -16,6 +16,7 @@ def _check_file_permission(file_path: str) -> bool:
         with open(file_path, "r+"):
             pass
         return True
+
     except PermissionError:
         return False
 
