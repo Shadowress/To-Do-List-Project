@@ -1,9 +1,7 @@
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
+from datetime import datetime
 
-if TYPE_CHECKING:
-    from datetime import datetime
-    from entities.task_status import TaskStatus
+from entities.task_status import TaskStatus
 
 
 @dataclass
@@ -49,22 +47,29 @@ class Task:
     def title(self, value: str) -> None:
         if not value:
             raise ValueError("Title cannot be empty")
-        else:
-            self._title = value
+
+        self._title = value
 
     @description.setter
     def description(self, value: str) -> None:
         if not value:
-            raise ValueError("Title cannot be empty")
-        else:
-            self._description = value
+            raise ValueError("Description cannot be empty")
+
+        self._description = value
 
     @due_date.setter
     def due_date(self, value: 'datetime') -> None:
-        # todo add validation for date
-        self._due_date = value
+        if not isinstance(value, datetime):
+            raise TypeError("Due date must be a datetime object")
+
+        if value < datetime.now():
+            raise ValueError("Due date cannot be in the past")
+
+        self._due_date = value.replace(hour=0, minute=0, second=0, microsecond=0)
 
     @status.setter
     def status(self, value: 'TaskStatus') -> None:
-        # todo add validation for status
+        if not isinstance(value, TaskStatus):
+            raise ValueError(f"Invalid status: {value}")
+
         self._status = value

@@ -43,8 +43,7 @@ class TaskManager:
         if not task_storage:
             return 1
 
-        else:
-            return max(task_storage.keys()) + 1
+        return max(task_storage.keys()) + 1
 
     def operate_delete_task(self, task_id: int) -> None:
         try:
@@ -56,15 +55,13 @@ class TaskManager:
 
     def operate_edit_task(self, task_id: int, data: list[str]) -> None:
         try:
-            title = data[0]
-            description = data[1]
-            due_date = datetime.strptime(data[2], self.DATE_FORMAT)
-            status = TaskStatus(data[3])
+            task: 'Task' = self._task_storage[task_id]
 
-            # todo change to using the setter instead of creating a new Task object
-            task: 'Task' = Task(task_id, title, description, due_date, status)
+            task.title = data[0]
+            task.description = data[1]
+            task.due_date = datetime.strptime(data[2], self.DATE_FORMAT)
+            task.status = TaskStatus(data[3])
 
-            self._task_storage[task_id] = task
             self.file_handler.write_file(self)
 
         except (IndexError, ValueError, TypeError) as e:
@@ -73,8 +70,8 @@ class TaskManager:
         except KeyError as e:
             raise TaskNotFoundError(f"Task with id {task_id} not found: {str(e)}")
 
-    def find_tasks_by_title(self, title: str) -> list['Task']:
-        ...
+    def get_tasks_by_title(self, title_filter: str) -> list['Task']:
+        return [task for task in self._task_storage.values() if title_filter.lower() in task.title.lower()]
 
     @property
     def task_storage(self) -> tuple['Task', ...]:

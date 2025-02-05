@@ -13,8 +13,7 @@ def _create_file(file_path: str) -> None:
 
 def _check_file_permission(file_path: str) -> bool:
     try:
-        with open(file_path, "r+"):
-            pass
+        open(file_path, "r+").close()
         return True
 
     except PermissionError:
