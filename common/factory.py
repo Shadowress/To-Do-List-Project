@@ -1,9 +1,11 @@
 from datetime import datetime
+from enum import Enum
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 import config
-from common.exceptions import UnsupportedFileFormatError, InvalidUIError, InvalidDisplayDateFormatError
+from common.exceptions import UnsupportedFileFormatError, InvalidUIError, InvalidDisplayDateFormatError, \
+    UITypeMappingError
 
 if TYPE_CHECKING:
     from filehandler import FileHandler
@@ -11,29 +13,49 @@ if TYPE_CHECKING:
     from controller import Controller
 
 
-# todo refactor
-def create_ui(controller: 'Controller') -> 'UI':
+class UIType(Enum):
+    # Add new ui type below if new ui is added
+    CONSOLE_MENU: str = "console menu"
+
+
+def _get_ui(ui_type: 'UIType') -> type:
     from ui.console_menu import ConsoleMenu
+
+    # Add new ui mapping below if new ui is added
+    ui_mapping: dict['Enum', type] = {
+        UIType.CONSOLE_MENU: ConsoleMenu
+    }
+
+    if ui_type not in ui_mapping:
+        raise UITypeMappingError(f"UIType mapping not found: {ui_type.value}")
+
+    return ui_mapping[ui_type]
+
+
+def create_ui(controller: 'Controller') -> 'UI':
+    ui_selection: str = config.UI.lower().strip()
+
     try:
-        ui: str = config.UI.lower().strip()
+        ui_type: 'UIType' = UIType(ui_selection)
+        ui_class: type = _get_ui(ui_type)
 
-        # Add new ui below if new ui is added
-        match ui:
-            # todo should i use enum for this?
-            case "console menu":
-                return ConsoleMenu(controller)
-            case _:
-                raise InvalidUIError(f"Invalid UI Provided: {ui}")
+        return ui_class(controller)
 
-    except InvalidUIError as e:
+    except ValueError:
+        raise InvalidUIError(f"Invalid ui provided: {ui_selection}")
+
+    # todo debug: except block is not called when exception raised
+    except (InvalidUIError, UITypeMappingError) as e:
         # The default ui selection can be changed below
-        default_ui_selection: str = "console menu"
-        default_ui: 'UI' = create_ui(controller)
+        default_ui_selection: 'UIType' = UIType.CONSOLE_MENU
 
-        default_ui.display_error(e)
-        default_ui.display_message(f"Proceeded using default ui: {default_ui_selection}")
+        ui_class: type = _get_ui(default_ui_selection)
+        ui = ui_class(controller)
 
-        return default_ui
+        ui.display_error(e)
+        ui.display_message(f"Proceeded using default ui: {default_ui_selection.value}")
+
+        return ui
 
 
 # todo refactor

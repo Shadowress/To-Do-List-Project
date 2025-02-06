@@ -51,3 +51,13 @@ class TaskNotFoundError(TaskManagerError):
 class InvalidTaskDataError(TaskManagerError):
     def __init__(self, message: str = "Invalid task data provided"):
         super().__init__(message)
+
+
+class CodeUpdateError(Exception):
+    def __init__(self, message: str):
+        super().__init__(message)
+
+
+class UITypeMappingError(CodeUpdateError):
+    def __init__(self, message: str = "The ui mapping for the given ui type is not found"):
+        super().__init__(message)

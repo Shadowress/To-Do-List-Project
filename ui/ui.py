@@ -9,10 +9,13 @@ if TYPE_CHECKING:
 
 
 class UI(ABC):
+    DISPLAY_DATE_FORMAT: str
+
     def __init__(self, controller: 'Controller') -> None:  # todo
-        self.display_date_format: str = set_display_date_format(config.DISPLAY_DATE_FORMAT, self)
+        UI.DISPLAY_DATE_FORMAT = set_display_date_format(config.DISPLAY_DATE_FORMAT, self)
         self.controller: 'Controller' = controller
 
+    @staticmethod
     @abstractmethod
     def run_main_menu(self) -> None:
         ...
