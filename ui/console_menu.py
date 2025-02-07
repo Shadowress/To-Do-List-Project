@@ -9,22 +9,19 @@ if TYPE_CHECKING:
 
 class ConsoleMenu(UI):
     def run_main_menu(self) -> None:
-        print("""
---------------------------------------------------
-              To-Do-List Application
-    1) View To-Do-List
-    2) Add Task
-    3) Edit Task
-    4) Delete Task
-    5) Exit System
---------------------------------------------------
-""")
+        self._display_main_menu()
         selection = input("Please enter a selection: ").strip()
 
         match selection:
             case "1":
-                ...
+                self.display_view_menu()
             case "2":
+                self._display_add_menu()
+            case "3":
+                self._display_edit_menu()
+            case "4":
+                ...
+            case "5":
                 ...
 
     def display_message(self, message: str) -> None:
@@ -37,7 +34,7 @@ class ConsoleMenu(UI):
         print(exception)
         sys.exit(1)
 
-    def main_menu(self) -> None:
+    def _display_main_menu(self) -> None:
         print("""
 --------------------------------------------------
               To-Do-List Application
@@ -48,3 +45,12 @@ class ConsoleMenu(UI):
     5) Exit System
 --------------------------------------------------
 """)
+
+    def display_view_menu(self) -> None:
+        ...
+
+    def _display_add_menu(self) -> None:
+        ...
+
+    def _display_edit_menu(self) -> None:
+        ...

@@ -1,7 +1,6 @@
 import threading
 from typing import TYPE_CHECKING
 
-import config
 from common.exceptions import FileDataError, InvalidTaskDataError, TaskNotFoundError, FileWriteError
 from common.factory import create_file_handler, create_ui
 from services import TaskManager
@@ -20,7 +19,7 @@ class Controller:
 
     def start(self) -> None:
         try:
-            threading.Thread(self._task_manager.setup())
+            threading.Thread(target=self._task_manager.setup()).start()
             self._ui.run_main_menu()
 
         except (FileDataError, PermissionError) as e:
@@ -28,7 +27,7 @@ class Controller:
 
         # todo uncomment ltr
         # except Exception as e:
-        #     self.ui.display_error_and_exit(e)
+        #     self._ui.display_error_and_exit(e)
 
     def get_tasks(self) -> tuple['Task', ...]:
         return self._task_manager.task_storage
@@ -57,5 +56,5 @@ class Controller:
         except (InvalidTaskDataError, TaskNotFoundError, FileWriteError) as e:
             self._ui.display_error(e)
 
-    def filter_tasks_by_title(self, title_filter: str) -> list['Task']:
+    def filter_tasks_by_title(self, title_filter: str) -> tuple['Task', ...]:
         return self._task_manager.get_tasks_by_title(title_filter)

@@ -16,7 +16,7 @@ class CSVFileHandler(FileHandler):
 
     def load_file(self, data_storage: 'TaskManager') -> None:
         try:
-            with open(self.file_path, "r") as file:
+            with open(self._file_path, "r") as file:
                 reader = csv.reader(file)
                 next(reader)
 
@@ -39,7 +39,7 @@ class CSVFileHandler(FileHandler):
 
     def write_file(self, data_storage: 'TaskManager') -> None:
         try:
-            with open(self.file_path, "w", newline="") as file:
+            with open(self._file_path, "w", newline="") as file:
                 writer = csv.writer(file)
                 writer.writerow(["task_id", "title", "description", "due_date", "status"])
 
@@ -64,7 +64,7 @@ class CSVFileHandler(FileHandler):
 
     def append_file(self, data_storage: 'TaskManager', task: 'Task') -> None:
         try:
-            with open(self.file_path, "a", newline="") as file:
+            with open(self._file_path, "a", newline="") as file:
                 writer = csv.writer(file)
 
                 comma_token: str = self.comma_token

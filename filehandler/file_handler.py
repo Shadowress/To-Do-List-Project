@@ -26,10 +26,10 @@ def _is_file_empty(file_path: str) -> bool:
 
 class FileHandler(ABC):
     def __init__(self, file_path: str):
-        self.file_path: str = file_path
+        self._file_path: str = "data/" + file_path
 
     def setup(self, data_storage: 'TaskManager') -> None:
-        file_path: str = self.file_path
+        file_path: str = self._file_path
 
         if not os.path.exists(file_path):
             _create_file(file_path)
@@ -45,12 +45,12 @@ class FileHandler(ABC):
 
     @abstractmethod
     def load_file(self, data_storage: 'TaskManager') -> None:
-        ...
+        pass
 
     @abstractmethod
     def write_file(self, data_storage: 'TaskManager') -> None:
-        ...
+        pass
 
     @abstractmethod
     def append_file(self, data_storage: 'TaskManager', task: 'Task') -> None:
-        ...
+        pass
