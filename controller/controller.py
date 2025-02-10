@@ -20,7 +20,7 @@ class Controller:
     def start(self) -> None:
         try:
             threading.Thread(target=self._task_manager.setup()).start()
-            self._ui.run_main_menu()
+            self._ui.run()
 
         except (FileDataError, PermissionError) as e:
             self._ui.display_error_and_exit(e)
@@ -29,7 +29,7 @@ class Controller:
         # except Exception as e:
         #     self._ui.display_error_and_exit(e)
 
-    def get_tasks(self) -> tuple['Task', ...]:
+    def get_all_tasks(self) -> tuple['Task', ...]:
         return self._task_manager.task_storage
 
     def add_task(self, task_data: list[str]) -> None:
@@ -56,5 +56,5 @@ class Controller:
         except (InvalidTaskDataError, TaskNotFoundError, FileWriteError) as e:
             self._ui.display_error(e)
 
-    def filter_tasks_by_title(self, title_filter: str) -> tuple['Task', ...]:
+    def get_tasks_by_title(self, title_filter: str) -> tuple['Task', ...]:
         return self._task_manager.get_tasks_by_title(title_filter)

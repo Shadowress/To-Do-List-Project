@@ -10,15 +10,11 @@ if TYPE_CHECKING:
 
 
 class UI(ABC):
-    DISPLAY_DATE_FORMAT: str
+    _DISPLAY_DATE_FORMAT: str
 
     def __init__(self, controller: 'Controller') -> None:
-        UI.DISPLAY_DATE_FORMAT = set_display_date_format(config.DISPLAY_DATE_FORMAT, self)
+        UI._DISPLAY_DATE_FORMAT = set_display_date_format(config.DISPLAY_DATE_FORMAT, self)
         self.controller: 'Controller' = controller
-
-    @abstractmethod
-    def run_main_menu(self) -> None:
-        pass
 
     @abstractmethod
     def display_message(self, message: str) -> None:
@@ -33,25 +29,27 @@ class UI(ABC):
         pass
 
     @abstractmethod
-    def _display_main_menu(self) -> None:
+    def _process_main(self) -> None:
         pass
 
-    @abstractmethod
-    def _display_add_menu(self) -> None:
-        pass
+    @classmethod
+    def _get_display_date_format(cls) -> str:
+        return cls._DISPLAY_DATE_FORMAT
 
-    @abstractmethod
-    def _display_edit_menu(self) -> None:
-        pass
+    def run(self) -> None:
+        self._process_main()
 
-    def _get_formatted_tasks_for_display(self) -> tuple[dict[str, str], ...]:
-        tasks: tuple['Task', ...] = self.controller.get_tasks()
+    def _get_formatted_tasks_for_display(self, title_filter: str = None) -> tuple[dict[str, str], ...]:
+        if title_filter:
+            tasks: tuple['Task', ...] = self.controller.get_tasks_by_title(title_filter)
+        else:
+            tasks: tuple['Task', ...] = self.controller.get_all_tasks()
 
         return tuple(
             {
                 "title": task.title,
                 "description": task.description,
-                "due_date": task.due_date.strftime(UI.DISPLAY_DATE_FORMAT),
+                "due_date": task.due_date.strftime(UI._get_display_date_format()),
                 "status": task.status
             }
             for task in tasks

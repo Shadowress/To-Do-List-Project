@@ -11,12 +11,12 @@ if TYPE_CHECKING:
 
 class TaskManager:
     def __init__(self, file_handler: 'FileHandler') -> None:
-        self.file_handler: 'FileHandler' = file_handler
+        self._file_handler: 'FileHandler' = file_handler
         self.DATE_FORMAT: str = "%Y-%m-%d"
         self._task_storage: dict[int, 'Task'] = {}
 
     def setup(self) -> None:
-        self.file_handler.setup(self)
+        self._file_handler.setup(self)
 
     def add_task_to_storage(self, task: 'Task') -> None:
         self._task_storage.update({task.task_id: task})
@@ -32,7 +32,7 @@ class TaskManager:
             task: 'Task' = Task(task_id, title, description, due_date, status)
 
             self.add_task_to_storage(task)
-            self.file_handler.append_file(self, task)  # todo might change to run on thread
+            self._file_handler.append_file(self, task)  # todo might change to run on thread
 
         except (IndexError, ValueError, TypeError) as e:
             raise InvalidTaskDataError(f"Invalid task data provided: {str(e)}")
@@ -48,7 +48,7 @@ class TaskManager:
     def operate_delete_task(self, task_id: int) -> None:
         try:
             del self._task_storage[task_id]
-            self.file_handler.write_file(self)  # todo might change to run on thread
+            self._file_handler.write_file(self)  # todo might change to run on thread
 
         except KeyError as e:
             raise TaskNotFoundError(f"Task with id {task_id} not found: {str(e)}")
@@ -62,7 +62,7 @@ class TaskManager:
             task.due_date = datetime.strptime(data[2], self.DATE_FORMAT)
             task.status = TaskStatus(data[3])
 
-            self.file_handler.write_file(self)  # todo might change to run on thread
+            self._file_handler.write_file(self)  # todo might change to run on thread
 
         except (IndexError, ValueError, TypeError) as e:
             raise InvalidTaskDataError(f"Invalid task data provided: {str(e)}")
@@ -76,3 +76,5 @@ class TaskManager:
     @property
     def task_storage(self) -> tuple['Task', ...]:
         return tuple(list(self._task_storage.values()))
+
+    # todo add method that auto checks and update overdue tasks when task is handled

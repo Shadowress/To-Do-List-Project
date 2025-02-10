@@ -62,9 +62,6 @@ class Task:
         if not isinstance(value, datetime):
             raise TypeError("Due date must be a datetime object")
 
-        if value < datetime.now():
-            raise ValueError("Due date cannot be in the past")
-
         self._due_date = value.replace(hour=0, minute=0, second=0, microsecond=0)
 
     @status.setter
