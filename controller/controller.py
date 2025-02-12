@@ -1,11 +1,12 @@
 import threading
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Union
 
 from common.exceptions import FileDataError, InvalidTaskDataError, TaskNotFoundError, FileWriteError
 from common.factory import create_file_handler, create_ui
 from services import TaskManager
 
 if TYPE_CHECKING:
+    from datetime import datetime
     from filehandler import FileHandler
     from ui import UI
     from entities import Task
@@ -32,7 +33,7 @@ class Controller:
     def get_all_tasks(self) -> tuple['Task', ...]:
         return self._task_manager.task_storage
 
-    def add_task(self, task_data: list[str]) -> None:
+    def add_task(self, task_data: dict[str, Union[str, 'datetime']]) -> None:
         try:
             self._task_manager.operate_add_task(task_data)
             self._ui.display_message(f"Task added successfully")

@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Union
 
 from common.exceptions import InvalidTaskDataError, TaskNotFoundError
 from entities.task_status import TaskStatus
@@ -21,13 +21,14 @@ class TaskManager:
     def add_task_to_storage(self, task: 'Task') -> None:
         self._task_storage.update({task.task_id: task})
 
-    def operate_add_task(self, data: list[str]) -> None:
+    def operate_add_task(self, data: dict[str, Union[str, 'datetime']]) -> None:
+        # todo change from list to dict, access data by title key
         try:
             task_id = self._get_next_task_id()
-            title = data[0]
-            description = data[1]
-            due_date = datetime.strptime(data[2], self.DATE_FORMAT)
-            status = TaskStatus(data[3])
+            title = data["title"]
+            description = data["description"]
+            due_date = data["due_date"]
+            status = TaskStatus.PENDING
 
             task: 'Task' = Task(task_id, title, description, due_date, status)
 
