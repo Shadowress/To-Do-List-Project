@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Union
 
 import config
 from common.factory import set_display_date_format
@@ -36,9 +36,15 @@ class UI(ABC):
     def _get_display_date_format(cls) -> str:
         return cls._DISPLAY_DATE_FORMAT
 
-    def _get_formatted_tasks_for_display(self, title_filter: str = None) -> tuple[dict[str, str], ...]:
+    def _get_formatted_tasks_for_display(
+            self,
+            title_filter: str = None,
+            status_filter: str = None
+    ) -> tuple[dict[str, Union[int, str]], ...]:
         if title_filter:
             tasks: tuple['Task', ...] = self._controller.get_tasks_by_title(title_filter)
+        elif status_filter:
+            tasks: tuple['Task', ...] = self._controller.get_tasks_by_status(status_filter)
         else:
             tasks: tuple['Task', ...] = self._controller.get_all_tasks()
 

@@ -33,6 +33,12 @@ class Controller:
     def get_all_tasks(self) -> tuple['Task', ...]:
         return self._task_manager.task_storage
 
+    def get_tasks_by_title(self, title_filter: str) -> tuple['Task', ...]:
+        return self._task_manager.get_tasks_by_title(title_filter)
+
+    def get_tasks_by_status(self, status_filter: str) -> tuple['Task', ...]:
+        return self._task_manager.get_tasks_by_status(status_filter)
+
     def add_task(self, task_data: dict[str, Union[str, 'datetime']]) -> None:
         try:
             self._task_manager.operate_add_task(task_data)
@@ -49,13 +55,10 @@ class Controller:
         except (TaskNotFoundError, FileWriteError) as e:
             self._ui.display_error(e)
 
-    def edit_task(self, task_id: int, task_data: list[str]) -> None:
+    def edit_task(self, task_id: int, task_data: dict[str, Union[str, 'datetime']]) -> None:
         try:
             self._task_manager.operate_edit_task(task_id, task_data)
             self._ui.display_message(f"Task updated successfully")
 
         except (InvalidTaskDataError, TaskNotFoundError, FileWriteError) as e:
             self._ui.display_error(e)
-
-    def get_tasks_by_title(self, title_filter: str) -> tuple['Task', ...]:
-        return self._task_manager.get_tasks_by_title(title_filter)

@@ -1,10 +1,10 @@
-from datetime import datetime
 from typing import TYPE_CHECKING, Union
 
 from common.exceptions import InvalidTaskDataError, TaskNotFoundError
 from entities.task_status import TaskStatus
 
 if TYPE_CHECKING:
+    from datetime import datetime
     from entities import Task
     from filehandler import FileHandler
 
@@ -22,7 +22,6 @@ class TaskManager:
         self._task_storage.update({task.task_id: task})
 
     def operate_add_task(self, data: dict[str, Union[str, 'datetime']]) -> None:
-        # todo change from list to dict, access data by title key
         try:
             task_id = self._get_next_task_id()
             title = data["title"]
@@ -54,14 +53,21 @@ class TaskManager:
         except KeyError as e:
             raise TaskNotFoundError(f"Task with id {task_id} not found: {str(e)}")
 
-    def operate_edit_task(self, task_id: int, data: list[str]) -> None:
+    def operate_edit_task(self, task_id: int, data: dict[str, Union[str, 'datetime']]) -> None:
         try:
             task: 'Task' = self._task_storage[task_id]
 
-            task.title = data[0]
-            task.description = data[1]
-            task.due_date = datetime.strptime(data[2], self.DATE_FORMAT)
-            task.status = TaskStatus(data[3])
+            if data["title"]:
+                task.title = data["title"]
+
+            if data["description"]:
+                task.description = data["description"]
+
+            if data["due_date"]:
+                task.due_date = data["due_date"]
+
+            if data["status"]:
+                task.status = TaskStatus(data["status"])
 
             self._file_handler.write_file(self)  # todo might change to run on thread
 
@@ -72,7 +78,10 @@ class TaskManager:
             raise TaskNotFoundError(f"Task with id {task_id} not found: {str(e)}")
 
     def get_tasks_by_title(self, title_filter: str) -> tuple['Task', ...]:
-        return tuple(task for task in self._task_storage.values() if title_filter.lower() in task.title.lower())
+        return tuple(task for task in self.task_storage if title_filter.lower() in task.title.lower())
+
+    def get_tasks_by_status(self, status_filter: str) -> tuple['Task', ...]:
+        return tuple(task for task in self.task_storage if task.status == status_filter)
 
     @property
     def task_storage(self) -> tuple['Task', ...]:
