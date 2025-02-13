@@ -11,8 +11,8 @@ class JSONFileHandler(FileHandler):
     def load_file(self, data_storage: 'TaskManager') -> None:
         pass
 
-    def write_file(self, data_storage: 'TaskManager') -> None:
+    def write_file(self, data_storage: list["Task"], date_format: str) -> None:
         pass
 
-    def append_file(self, data_storage: 'TaskManager', task: 'Task') -> None:
+    def append_file(self, date_format: str, task: 'Task') -> None:
         pass

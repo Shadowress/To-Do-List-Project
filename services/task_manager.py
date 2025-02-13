@@ -1,10 +1,10 @@
-from typing import TYPE_CHECKING, Union
+from datetime import datetime
+from typing import TYPE_CHECKING, Union, ValuesView
 
 from common.exceptions import InvalidTaskDataError, TaskNotFoundError
 from entities.task_status import TaskStatus
 
 if TYPE_CHECKING:
-    from datetime import datetime
     from entities import Task
     from filehandler import FileHandler
 
@@ -17,6 +17,7 @@ class TaskManager:
 
     def setup(self) -> None:
         self._file_handler.setup(self)
+        self._check_overdue_tasks()
 
     def add_task_to_storage(self, task: 'Task') -> None:
         self._task_storage.update({task.task_id: task})
@@ -32,7 +33,7 @@ class TaskManager:
             task: 'Task' = Task(task_id, title, description, due_date, status)
 
             self.add_task_to_storage(task)
-            self._file_handler.append_file(self, task)  # todo might change to run on thread
+            self._file_handler.append_file(self.DATE_FORMAT, task)  # todo might change to run on thread
 
         except (IndexError, ValueError, TypeError) as e:
             raise InvalidTaskDataError(f"Invalid task data provided: {str(e)}")
@@ -48,7 +49,8 @@ class TaskManager:
     def operate_delete_task(self, task_id: int) -> None:
         try:
             del self._task_storage[task_id]
-            self._file_handler.write_file(self)  # todo might change to run on thread
+            # todo might change to run on thread
+            self._file_handler.write_file(list(self._task_storage.values()), self.DATE_FORMAT)
 
         except KeyError as e:
             raise TaskNotFoundError(f"Task with id {task_id} not found: {str(e)}")
@@ -66,10 +68,14 @@ class TaskManager:
             if data["due_date"]:
                 task.due_date = data["due_date"]
 
+                if TaskStatus.OVERDUE.value == task.status and datetime.now() < data["due_date"]:
+                    task.status = TaskStatus.PENDING
+
             if data["status"]:
                 task.status = TaskStatus(data["status"])
 
-            self._file_handler.write_file(self)  # todo might change to run on thread
+            # todo might change to run on thread
+            self._file_handler.write_file(list(self._task_storage.values()), self.DATE_FORMAT)
 
         except (IndexError, ValueError, TypeError) as e:
             raise InvalidTaskDataError(f"Invalid task data provided: {str(e)}")
@@ -83,8 +89,20 @@ class TaskManager:
     def get_tasks_by_status(self, status_filter: str) -> tuple['Task', ...]:
         return tuple(task for task in self.task_storage if task.status == status_filter)
 
+    def _check_overdue_tasks(self) -> None:
+        tasks: ValuesView['Task'] = self._task_storage.values()
+        is_changed: bool = False
+
+        for task in tasks:
+            if "Completed" != task.status and datetime.now() > task.due_date:
+                task.status = TaskStatus.OVERDUE
+                is_changed = True
+
+        if is_changed:
+            # todo might change to run on thread
+            self._file_handler.write_file(list(self._task_storage.values()), self.DATE_FORMAT)
+
     @property
     def task_storage(self) -> tuple['Task', ...]:
+        self._check_overdue_tasks()
         return tuple(list(self._task_storage.values()))
-
-    # todo add method that auto checks and update overdue tasks when task is handled

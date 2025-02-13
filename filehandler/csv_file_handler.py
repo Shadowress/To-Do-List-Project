@@ -37,20 +37,20 @@ class CSVFileHandler(FileHandler):
         except csv.Error as e:
             raise CSVParsingError(f"CSV Parsing Error: {str(e)}")
 
-    def write_file(self, data_storage: 'TaskManager') -> None:
+    def write_file(self, data_storage: list["Task"], date_format: str) -> None:
         try:
             with open(self._file_path, "w", newline="") as file:
                 writer = csv.writer(file)
                 writer.writerow(["task_id", "title", "description", "due_date", "status"])
 
                 comma_token: str = self.comma_token
-                for task in data_storage.task_storage:
+                for task in data_storage:
                     try:
                         data: list = [
                             task.task_id,
                             task.title.replace(",", comma_token),
                             task.description.replace(",", comma_token),
-                            task.due_date.strftime(data_storage.DATE_FORMAT),
+                            task.due_date.strftime(date_format),
                             task.status
                         ]
 
@@ -62,7 +62,7 @@ class CSVFileHandler(FileHandler):
         except csv.Error as e:
             raise CSVParsingError(f"CSV Parsing Error: {str(e)}")
 
-    def append_file(self, data_storage: 'TaskManager', task: 'Task') -> None:
+    def append_file(self, date_format: str, task: 'Task') -> None:
         try:
             with open(self._file_path, "a", newline="") as file:
                 writer = csv.writer(file)
@@ -73,7 +73,7 @@ class CSVFileHandler(FileHandler):
                         task.task_id,
                         task.title.replace(",", comma_token),
                         task.description.replace(",", comma_token),
-                        task.due_date.strftime(data_storage.DATE_FORMAT),
+                        task.due_date.strftime(date_format),
                         task.status
                     ]
 
