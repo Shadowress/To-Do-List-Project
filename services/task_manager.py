@@ -2,10 +2,10 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Union, ValuesView
 
 from common.exceptions import InvalidTaskDataError, TaskNotFoundError
+from entities import Task
 from entities.task_status import TaskStatus
 
 if TYPE_CHECKING:
-    from entities import Task
     from filehandler import FileHandler
 
 
@@ -33,7 +33,7 @@ class TaskManager:
             task: 'Task' = Task(task_id, title, description, due_date, status)
 
             self.add_task_to_storage(task)
-            self._file_handler.append_file(self.DATE_FORMAT, task)  # todo might change to run on thread
+            self._file_handler.append_file(self.DATE_FORMAT, task)
 
         except (IndexError, ValueError, TypeError) as e:
             raise InvalidTaskDataError(f"Invalid task data provided: {str(e)}")
@@ -49,7 +49,7 @@ class TaskManager:
     def operate_delete_task(self, task_id: int) -> None:
         try:
             del self._task_storage[task_id]
-            # todo might change to run on thread
+
             self._file_handler.write_file(list(self._task_storage.values()), self.DATE_FORMAT)
 
         except KeyError as e:
@@ -59,22 +59,21 @@ class TaskManager:
         try:
             task: 'Task' = self._task_storage[task_id]
 
-            if data["title"]:
+            if "title" in data.keys():
                 task.title = data["title"]
 
-            if data["description"]:
+            if "description" in data.keys():
                 task.description = data["description"]
 
-            if data["due_date"]:
+            if "due_date" in data.keys():
                 task.due_date = data["due_date"]
 
                 if TaskStatus.OVERDUE.value == task.status and datetime.now() < data["due_date"]:
                     task.status = TaskStatus.PENDING
 
-            if data["status"]:
+            if "status" in data.keys():
                 task.status = TaskStatus(data["status"])
 
-            # todo might change to run on thread
             self._file_handler.write_file(list(self._task_storage.values()), self.DATE_FORMAT)
 
         except (IndexError, ValueError, TypeError) as e:
@@ -99,7 +98,6 @@ class TaskManager:
                 is_changed = True
 
         if is_changed:
-            # todo might change to run on thread
             self._file_handler.write_file(list(self._task_storage.values()), self.DATE_FORMAT)
 
     @property

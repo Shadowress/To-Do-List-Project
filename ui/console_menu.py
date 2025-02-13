@@ -119,6 +119,8 @@ class ConsoleMenu(UI):
                     return True
                 case "no":
                     return False
+                case "":
+                    continue
                 case _:
                     print("Please enter yes / no!")
 
@@ -159,7 +161,7 @@ class ConsoleMenu(UI):
 
             match ConsoleMenu._get_menu_selection():
                 case "1":
-                    ConsoleMenu._display_tasks(self._get_formatted_tasks_for_display())
+                    self._process_display_all_tasks()
                 case "2":
                     self._process_filter_task_by_title()
                 case "3":
@@ -169,24 +171,45 @@ class ConsoleMenu(UI):
                 case _:
                     print("Please enter a valid selection! (1 - 3)")
 
+    def _process_display_all_tasks(self) -> None:
+        tasks: tuple[dict[str, Union[int, str]], ...] = self._get_formatted_tasks_for_display()
+
+        if tasks:
+            ConsoleMenu._display_tasks(tasks)
+        else:
+            print(f"There are no tasks")
+
     def _process_filter_task_by_title(self) -> None:
-        title_filter: str = input("Please enter a title that you want to search by: ").strip()
+        while True:
+            title_filter: str = input("Please enter a title that you want to search by: ").strip()
+
+            if title_filter:
+                break
+
         tasks: tuple[dict[str, Union[int, str]], ...] = self._get_formatted_tasks_for_display(title_filter=title_filter)
-        ConsoleMenu._display_tasks(tasks)
+
+        if tasks:
+            ConsoleMenu._display_tasks(tasks)
+        else:
+            print(f"There are no tasks with title filter: {title_filter}")
 
     def _process_filter_task_by_status(self) -> None:
         while True:
             print(f"Available status: {", ".join(status.value for status in TaskStatus)}")
-            status_filter: str = input("Please enter a status that you want to search by: ").strip().capitalize()
+            status_filter: str = input("Please enter a status that you want to search by: ").strip().title()
 
-            if status_filter in TaskStatus.__members__.values():
+            if status_filter in {status.value for status in TaskStatus}:
                 break
 
             self.display_message("Please enter a valid status!")
 
         tasks: tuple[dict[str, Union[int, str]], ...] = self._get_formatted_tasks_for_display(
             status_filter=status_filter)
-        ConsoleMenu._display_tasks(tasks)
+
+        if tasks:
+            ConsoleMenu._display_tasks(tasks)
+        else:
+            print(f"There are no tasks with {status_filter} status")
 
     def _process_add_task_menu(self) -> None:
         date_format: str = ConsoleMenu._get_display_date_format()
@@ -209,6 +232,7 @@ class ConsoleMenu(UI):
 
                 if datetime.now() > due_date:
                     self.display_message("The date given cannot be in the past!")
+                    continue
 
                 return due_date
 
@@ -216,7 +240,8 @@ class ConsoleMenu(UI):
                 self.display_message(error_message)
 
     def _process_edit_task_menu(self) -> None:
-        task: dict[str, str] = self._get_task_by_index()
+        task: dict[str, str] = self._get_task_by_index(
+            "Please enter the index of the task that you would like to edit: ")
 
         while True:
             ConsoleMenu._display_edit_menu()
@@ -224,21 +249,23 @@ class ConsoleMenu(UI):
             match ConsoleMenu._get_menu_selection():
                 case "1":
                     self._process_edit_task_details_menu(task)
+                    break
                 case "2":
                     self._process_update_task_status(task)
+                    break
                 case "3":
                     break
                 case _:
                     print("Please enter a valid selection! (1 - 3)")
 
-    def _get_task_by_index(self) -> dict[str, Union[int, str]]:
+    def _get_task_by_index(self, prompt: str) -> dict[str, Union[int, str]]:
         tasks: tuple[dict[str, str], ...] = self._get_formatted_tasks_for_display()
         ConsoleMenu._display_tasks(tasks, True)
 
         while True:
             try:
                 task_index: int = int(
-                    input("Please enter the index of the task that you would like to edit: ").strip()) - 1
+                    input(prompt).strip()) - 1
                 task: dict[str, str] = tasks[task_index]
                 return task
 
@@ -302,11 +329,14 @@ class ConsoleMenu(UI):
             self.display_error(ValueError(f"The status is not valid: {status}"))
             return
 
+        ConsoleMenu._display_edit_changes(task, {"status": new_status})
+
         if ConsoleMenu._get_user_confirmation("Are you sure you want to update the task status above (yes / no): "):
             self._controller.edit_task(task["task_id"], {"status": new_status})
 
     def _process_delete_task(self) -> None:
-        task: dict[str, Union[int, str]] = self._get_task_by_index()
+        task: dict[str, Union[int, str]] = self._get_task_by_index(
+            "Please enter the index of the task that you would like to delete: ")
         ConsoleMenu._display_tasks((task,))
 
         if ConsoleMenu._get_user_confirmation("Are you sure you want to delete the task (yes / no): "):

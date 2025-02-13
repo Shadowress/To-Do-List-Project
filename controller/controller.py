@@ -26,9 +26,8 @@ class Controller:
         except (FileDataError, PermissionError) as e:
             self._ui.display_error_and_exit(e)
 
-        # todo uncomment ltr
-        # except Exception as e:
-        #     self._ui.display_error_and_exit(e)
+        except Exception as e:
+            self._ui.display_error_and_exit(e)
 
     def get_all_tasks(self) -> tuple['Task', ...]:
         return self._task_manager.task_storage
